@@ -24,15 +24,15 @@ void SettingsClass::begin() {
       WiFi.macAddress(mac);
       sprintf(hostname, "espclock%02x", mac[WL_MAC_ADDR_LENGTH-1]);
 */      
-      strcpy(ssid, "speedtouch");
-      strcpy(password, "Delphine_Marie_Quentin_Arnaud");
-      strcpy(hostname, "NodeMCUV1");
+      strcpy(ssid, "YOUR_SSID");
+      strcpy(password, "YOUR_PASSWORD");
+      strcpy(hostname, "ESP8266Node1");
       strcpy(ntpServer, "fr.pool.ntp.org");
       utcOffset = 1; 
       daylightSaving = 0; 
     }
     magic = FLASH_MAGIC;
-    save();  // Is this really necessary?
+    save();
   }
 }
 

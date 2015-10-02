@@ -111,22 +111,26 @@
       </div> <!-- row -->
     </div> <!-- panel-body -->
   </div> <!-- panel -->
-  <button class="btn btn-default btn-large btn-primary" onClick="save()">Save</button>
+  <div class="col-md-6">
+    <button class="btn btn-default btn-large btn-primary" onClick="save()">Save</button>
+    <button class="btn btn-default btn-large btn-primary" onClick="load()">Refresh</button>
+  </div> <!-- col-md-6 -->
 </div> <!-- container -->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 
 <script>
-$(document).ajaxStart(function () {
-    $(document.body).css({ 'cursor': 'wait' });
+/*
+$(function(){  
+  $("html").bind("ajaxStart", function(){  
+     $(this).addClass('busy');  
+   }).bind("ajaxStop", function(){  
+     $(this).removeClass('busy');  
+   });  
 });
-
-$(document).ajaxComplete(function () {
-});
-
+*/
 function load() {
   $.getJSON("/api/settings", function(data) {
-    console.log(data);
     $("#ssid").val(data.ssid);
     $("#password").val(data.password);
     $("#hostname").val(data.hostname);
@@ -150,7 +154,6 @@ function save() {
     ntpserver: $("#ntpserver").val(),
     daylight: $('#daylight').prop('checked') == true ? 1 : 0
   });
-  console.log('save : ' + data);
   $.ajax("/api/update", {
     type: "post",
     contentType: "application/json",

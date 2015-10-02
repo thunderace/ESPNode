@@ -9,6 +9,7 @@
 #include "NTPClient.h"
 
 ESP8266WebServer WebServerClass::_server;
+bool WebServerClass::started = false;
 
 const char TEXT_PLAIN[] PROGMEM = "text/plain";
 const char TEXT_HTML[] PROGMEM = "text/html";
@@ -33,8 +34,8 @@ void WebServerClass::handleNetConfig() {
     return;
   }
 
-  String ssid = _server.arg("ssid"),
-         password = _server.arg("password");
+  String ssid = _server.arg("ssid");
+  String password = _server.arg("password");
   if (ssid.length() > sizeof(Settings.ssid) - 1 ||
       password.length() > sizeof(Settings.password) - 1) {
     _server.send_P(400, TEXT_PLAIN, PSTR("Fields too long"));
@@ -43,7 +44,6 @@ void WebServerClass::handleNetConfig() {
 
   strcpy(Settings.ssid, ssid.c_str());
   strcpy(Settings.password, password.c_str());
-  
   Settings.save();
   _server.send_P(200, TEXT_PLAIN, PSTR("Settings stored; please power cycle."));
 }
@@ -55,7 +55,6 @@ void WebServerClass::handleSettingsHtml() {
 void WebServerClass::handleApiSettings() {
   StaticJsonBuffer<1024> _json;
   JsonObject &s = _json.createObject();
-
   s["ssid"] = Settings.ssid;
   s["password"] = Settings.password;
   s["hostname"] = Settings.hostname;
@@ -86,6 +85,9 @@ void WebServerClass::handleApiSettings() {
   }
   curtime += second(t);
   curtime += "s";
+  // free heap
+  curtime += " - FreeMem : ";
+  curtime += ESP.getFreeHeap();
   s["curtime"] = curtime;
   // printTo(String) does not seem to work?
   //String data;
@@ -96,8 +98,8 @@ void WebServerClass::handleApiSettings() {
 }
 
 void WebServerClass::handleApiUpdate() {
-    bool updateTime = false;
-    bool showMessage = false;
+  bool updateTime = false;
+  bool showMessage = false;
 
   // Check if JSON payload is present
   if (!_server.hasArg("plain")) {
@@ -167,15 +169,15 @@ void WebServerClass::begin() {
     _server.on("/api/settings", HTTP_GET, handleApiSettings);
     _server.on("/api/update", HTTP_POST, handleApiUpdate);
   } else {
-    // Internet is not available, cannot get Bootstrap, etc
-    // so fall back to a very basic webpage
     _server.on("/", handleBasicSetup);
     _server.on("/netconfig", handleNetConfig);    
   }
-  _server.onNotFound(handleNotFound);
+  if (started == false) {
+    started = true;
+    _server.onNotFound(handleNotFound);
 
-  _server.begin();
-
+    _server.begin();
+  }
   // Start mDNS responder and register web interface
   if (WiFi.status() == WL_CONNECTED && MDNS.begin(Settings.hostname)) {
     MDNS.addService("http", "tcp", 80);

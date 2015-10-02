@@ -6,11 +6,13 @@
 #include <ESP8266WebServer.h>
 #include <ArduinoJson.h>
 
-class WebServerClass {  // This is really a namespace, just in odd Arduino-style
+class WebServerClass {  
 public:
   void begin();
   void loop();
-
+  WebServerClass() {
+    started = false;
+  }
 private:
   static void handleNotFound();
 
@@ -22,6 +24,7 @@ private:
   static void handleApiUpdate();
 
   static ESP8266WebServer _server;
+  static bool started;
 };
 
 extern WebServerClass WebServer;

@@ -22,7 +22,7 @@ git clone --recursive https://github.com/thunderace/ESPNode.git
 * build and upload : make upload
  
 
-![UI](https://github.com/thunderace/ESPNode/tree/master/screenshots/ESPNode.png)
+![screenshot](https://github.com/thunderace/ESPNode/raw/master/screenshots/ESPNode.png)
 
 
 

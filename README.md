@@ -20,6 +20,10 @@ git clone --recursive https://github.com/thunderace/ESPNode.git
 *   ./tools/xxd_html.sh settings.html
 *   ./tools/xxd_html.sh basicsetup.html
 * build and upload : make upload
+ 
+
+![UI](https://github.com/thunderace/ESPNode/screenshots/ESPNode.png)
+
 
  
 

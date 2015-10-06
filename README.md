@@ -5,6 +5,7 @@ Based on ESPClock : https://github.com/spapadim/ESPClock
 Features :
 * Web-based configuration UI
 * Clock synchronization over NTP with timezone/daylight saving options
+* Network scanner
 
 #### Dependencies
 * [ArduinoJson](https://github.com/bblanchon/ArduinoJson)
@@ -16,10 +17,10 @@ Features :
 git clone --recursive https://github.com/thunderace/ESPNode.git
 
 #### How to build
-* if you change a html file : 
+if you change a html file : 
 *   ./tools/xxd_html.sh settings.html
 *   ./tools/xxd_html.sh basicsetup.html
-* build and upload : make upload
+build and upload : make upload
  
 ![screenshot](https://github.com/thunderace/ESPNode/raw/master/screenshots/ESPNode.png)
 

@@ -7,6 +7,7 @@
 #include "Settings.h"
 #include "WebServer.h"
 #include "NTPClient.h"
+#include "utils.h"
 
 ESP8266WebServer WebServerClass::_server;
 bool WebServerClass::started = false;
@@ -61,6 +62,8 @@ void WebServerClass::handleApiSettings() {
   s["ntpserver"] = Settings.ntpServer;
   s["utcoffset"] = Settings.utcOffset;
   s["daylight"] = Settings.daylightSaving;
+  s["networks"] = scanWifi();
+
   time_t t = now();
   String curtime = dayStr(weekday(t));
   curtime += " ";
@@ -169,6 +172,7 @@ void WebServerClass::begin() {
     _server.on("/api/settings", HTTP_GET, handleApiSettings);
     _server.on("/api/update", HTTP_POST, handleApiUpdate);
   } else {
+    Serial.println("Wifi not connected");
     _server.on("/", handleBasicSetup);
     _server.on("/netconfig", handleNetConfig);    
   }

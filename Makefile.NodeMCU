@@ -1,7 +1,6 @@
 ARDUINO_VARIANT    = nodemcu
 SERIAL_PORT = /dev/nodemcu
 MY_DIR := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))
-
 include $(HOME)/Esp8266-Arduino-Makefile/esp8266Arduino.mk
 
 

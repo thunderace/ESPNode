@@ -1,5 +1,4 @@
 // Code based on the NTP client example for ESP8266WiFi library
-
 #include <Arduino.h>
 
 #include <ESP8266WiFi.h>

@@ -10,33 +10,50 @@
 #include "Settings.h"
 #include "NTPClient.h"
 #include "WebServer.h"
-
+/*
+#define DEFAULT_AP_PASSWORD  "esp"
+#define WIFI_CONNECT_TIMEOUT 10  // in seconds
+#define NTP_SYNC_INTERVAL 3600  // in seconds
+*/
 static const char DEFAULT_AP_PASSWORD[] = "esp";
-static const char WIFI_CONNECT_TIMEOUT = 10;  // in seconds
-static const time_t NTP_SYNC_INTERVAL = 3600;  // in seconds
+static const char WIFI_CONNECT_TIMEOUT = 10; // in seconds
+static const time_t NTP_SYNC_INTERVAL = 3600; // in seconds
 
-static void update_time(bool force = false) {
-  static time_t last_update = 0;
-  static char buf[12];
-  static char led_state = LOW;
-  time_t time_now = now();
-  if ((time_now != last_update && (time_now % 60) == 0) || force) {
-    int hr = hour();
-    sprintf(buf, "%02d:%02d", hr, minute());
-    Serial.print("New time: "); Serial.println(buf);  Serial.flush();  // DEBUG
-    last_update = time_now;
+static void print_date_time() {
+  time_t t = now();
+  String curtime = dayStr(weekday(t));
+  curtime += " ";
+  curtime += day(t);
+  curtime += " ";
+  curtime += monthStr(month(t));
+  curtime += " ";
+  curtime += year(t);
+  curtime += " ";
+  if (hour() < 10) {
+    curtime += "0";
   }
+  curtime += hour(t);
+  curtime += "h";
+  if (minute() < 10) {
+    curtime += "0";
+  }
+  curtime += minute(t);
+  curtime += "m";
+  if (second() < 10) {
+    curtime += "0";
+  }
+  curtime += second(t);
+  curtime += "s";
+  Serial.println(curtime);
 }
 
-static void connect_wifi() {
-  if (Settings.ssid[0] != '\0') {
-    WiFi.hostname(Settings.hostname);
-    WiFi.begin(Settings.ssid, Settings.password);
-    int s = 0;
-    while ((WiFi.status() != WL_CONNECTED) && (s < 2*WIFI_CONNECT_TIMEOUT)) {
-      delay(500);  // Must match while condition above
-      ++s;
-    }
+void connect_wifi() {
+  WiFi.hostname(Settings.hostname);
+  WiFi.begin(Settings.ssid, Settings.password);
+  int s = 0;
+  while ((WiFi.status() != WL_CONNECTED) && (s < 2*WIFI_CONNECT_TIMEOUT)) {
+    delay(500);  // Must match while condition above
+    ++s;
   }
 
   if (WiFi.status() != WL_CONNECTED) {
@@ -47,15 +64,15 @@ static void connect_wifi() {
 
 static void time_cb(time_t time) {
   setTime(time);
-  update_time(true);
+  print_date_time();
 }
 
 
 void setup() {
   Serial.begin(115200);
+  delay(2000);
   Serial.println("**** START ****");
   Settings.begin();
-  delay(200);
   connect_wifi();
 
   if (WiFi.status() == WL_CONNECTED) {
@@ -67,7 +84,6 @@ void setup() {
 
 void loop() {
   WebServer.loop();
-  update_time();
 
   if (WiFi.status() == WL_CONNECTED) {
     NTPClient.loop();

@@ -16,12 +16,11 @@ Features :
 git clone --recursive https://github.com/thunderace/ESPNode.git
 
 #### How to build
-* generate *_html.h : 
+* if you change a html file : 
 *   ./tools/xxd_html.sh settings.html
 *   ./tools/xxd_html.sh basicsetup.html
 * build and upload : make upload
  
-
 ![screenshot](https://github.com/thunderace/ESPNode/raw/master/screenshots/ESPNode.png)
 
 

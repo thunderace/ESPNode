@@ -4,10 +4,10 @@
 #include <IPAddress.h>
 #include <EEPROM.h>
 
-struct SettingsClass {
 #define FLASH_MAGIC_R1 0x5aa5e126
 #define FLASH_MAGIC 0x5aa5e147
 
+struct SettingsClass {
   uint32_t magic;
   char ssid[32];  // ESP seems to have a 31-char limit
   char password[64];

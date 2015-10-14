@@ -157,7 +157,7 @@ void WebServerClass::handleApiUpdate() {
 
   Settings.save();
   if (updateTime == true) {
-    NTPClient.startRequest();
+    NTPClient.forceRequest();
   }
   if (showMessage == true) {
     _server.send_P(200, APPLICATION_JSON, PSTR("{ \"showMessage\": true }"));

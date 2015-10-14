@@ -6,14 +6,13 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
 </head>
 
-<body style="cursor: wait;">
+<body style="height: 100%;">
 <nav class="navbar navbar-fixed-top navbar-inverse">
   <div class="container">
-    <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
       <a class="navbar-brand" href="#">ESPNode Settings</a>
     </div>
-  </div><!-- /.container-fluid -->
+  </div>
 </nav>
 
 <div class="container" style="padding-top: 80px;">
@@ -139,16 +138,8 @@
 }
 </style>
 <script>
-/*
-$(function(){  
-  $("html").bind("ajaxStart", function(){  
-     $(this).addClass('busy');  
-   }).bind("ajaxStop", function(){  
-     $(this).removeClass('busy');  
-   });  
-});
-*/
 function load() {
+  $(document.body).css({ 'cursor': 'wait' });
   $.getJSON("/api/settings", function(data) {
     $("#ssid").val(data.ssid);
     $("#password").val(data.password);
@@ -179,20 +170,16 @@ function save() {
     contentType: "application/json",
     data: data,
     success: function(result) { 
+      $(document.body).css({ 'cursor': 'default' });
       if (result.showMessage == true) {
-        $(document.body).css({ 'cursor': 'default' });
         alert("Settings saved.\nPower-cycle to take effect."); 
-        $(document.body).css({ 'cursor': 'wait' });
-      } 
-      /* location.reload();  */
-      load();
+      } else { 
+        load();
+      }
     },
     error: function (request, status, error) { alert("Error saving settings:\n" + request.responseText); }
   });
-/*  event.preventDefault(); */
 }
 </script>
-
 </body>
-
 </html>

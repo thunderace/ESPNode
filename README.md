@@ -16,7 +16,7 @@ Features :
 ## Install
 git clone --recursive https://github.com/thunderace/ESPNode.git
 
-#### How to build
+## Build
 if you change a html file : 
 *   ./tools/xxd_html.sh settings.html
 *   ./tools/xxd_html.sh basicsetup.html

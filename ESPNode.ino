@@ -17,7 +17,6 @@
 */
 static const char DEFAULT_AP_PASSWORD[] = "esp";
 static const char WIFI_CONNECT_TIMEOUT = 10; // in seconds
-static const time_t NTP_SYNC_INTERVAL = 3600; // in seconds
 
 static void print_date_time() {
   time_t t = now();
@@ -63,8 +62,26 @@ void connect_wifi() {
 }
 
 static void time_cb(time_t time) {
-  setTime(time);
   print_date_time();
+}
+
+
+void manage_network() {
+  WiFi.hostname(Settings.hostname);
+  WiFi.begin(Settings.ssid, Settings.password);
+  int s = 0;
+  while ((WiFi.status() != WL_CONNECTED) && (s < 2*WIFI_CONNECT_TIMEOUT)) {
+    delay(500);  // Must match while condition above
+    ++s;
+  }
+
+  if (WiFi.status() == WL_CONNECTED) {
+    NTPClient.begin(time_cb);
+  } else {
+    // Fall back to soft-AP mode
+    WiFi.softAP(Settings.hostname, DEFAULT_AP_PASSWORD);
+  }
+  WebServer.begin();
 }
 
 
@@ -73,6 +90,8 @@ void setup() {
   delay(2000);
   Serial.println("**** START ****");
   Settings.begin();
+  manage_network();
+/*
   connect_wifi();
 
   if (WiFi.status() == WL_CONNECTED) {
@@ -80,20 +99,11 @@ void setup() {
     NTPClient.startRequest();
   }
   WebServer.begin();
+*/  
 }
 
 void loop() {
   WebServer.loop();
-
-  if (WiFi.status() == WL_CONNECTED) {
-    NTPClient.loop();
-
-    static time_t last = 0;
-    time_t t_now = now();
-    if (t_now - last > NTP_SYNC_INTERVAL) {
-      NTPClient.startRequest();
-      last = t_now;
-    }
-  }
+  NTPClient.loop();
 }
 

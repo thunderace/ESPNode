@@ -4,7 +4,6 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 #include <Time.h>
-
 #include "Settings.h"
 #include "NTPClient.h"
 
@@ -15,8 +14,14 @@ void NTPClientClass::begin(ntp_cb_t cb) {
 }
 
 void NTPClientClass::loop() {
-  if (_state == STATE_IDLE)
+  if (_cb == 0) {
     return;
+  }
+
+  if (_state == STATE_IDLE) {
+    _startRequest();
+    return;
+  }
 
   if (!_udp.parsePacket()) {
     if (now() - _req_time > NTP_TIMEOUT) {
@@ -48,6 +53,8 @@ void NTPClientClass::loop() {
 
   _udp.stop();
   _req_time = 0;
+  setTime(local_epoch);
+  _lastRequest = now();
   _state = STATE_IDLE;
 
   if (_cb) {
@@ -55,15 +62,17 @@ void NTPClientClass::loop() {
   }
 }
 
-void NTPClientClass::startRequest() {
-  if (_cb == 0)
-    return;  // Don't bother, nobody will get it anyway
-
+void NTPClientClass::_startRequest() {
   if (_state != STATE_IDLE)
     return;  // Don't submit more than one request at a time
+    
+  time_t t_now = now();
+  if (_lastRequest != 0 && t_now - _lastRequest <= NTP_SYNC_INTERVAL) {
+    return;
+  }
+  _state = STATE_PENDING;
 
   _udp.begin(LOCAL_PORT);
-
   memset(_buf, 0, NTP_PACKET_SIZE);
   // Initialize values needed to form NTP request
   _buf[0] = 0b11100011;   // LI, Version, Mode
@@ -81,6 +90,5 @@ void NTPClientClass::startRequest() {
   _udp.endPacket();
 
   _req_time = now();
-  _state = STATE_PENDING;
 }
 
